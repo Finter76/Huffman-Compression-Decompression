@@ -58,6 +58,10 @@ MinHeap* build_priority_queue(unsigned long* freq){
     if(!freq) exit(1);   
 
     MinHeap* heap = malloc(sizeof(MinHeap));
+    if(!heap){
+        perror("malloc");
+        exit(1);
+    }
     memset(heap, 0, sizeof(MinHeap));  
 
     for(long i = 0; i < SIZE; i++){
@@ -145,8 +149,14 @@ void generate_codes(Node* node, Code* table, unsigned char* buffer, int depth){
     if(!node) return;
 
     if(!node->left && !node->right){
-        memcpy(table[node->val].bits, buffer, (depth + 7)/8);
-        table[node->val].length = depth;
+        if(depth == 0){
+            // caso speciale: un solo simbolo
+            table[node->val].bits[0] = 0;
+            table[node->val].length = 1;
+        } else {
+            memcpy(table[node->val].bits, buffer, (depth + 7)/8);
+            table[node->val].length = depth;
+        }
         return;
     }
 
@@ -208,7 +218,12 @@ void free_tree(Node *node){
 
 void write_compressed(char *filename_input, MinHeap *heap, Node* root, unsigned char *file_buffer, long index, Code* table){
     // Creo il file
-    char filename_output[strlen(filename_input) + 5];
+    char *filename_output = malloc(strlen(filename_input) + 5);
+    if(!filename_output){
+        perror("malloc");
+        exit(1);
+    }
+
     int len = strlen(filename_input);
     memcpy(filename_output, filename_input, len - 3);
     filename_output[len - 3] = '\0';
@@ -261,7 +276,7 @@ void write_compressed(char *filename_input, MinHeap *heap, Node* root, unsigned 
             bit_index++;
 
             if(bit_index == 8){
-                if(fwrite(&byte, 1, 1, fp) != 1){
+                if(fwrite(&byte_buffer, 1, 1, fp) != 1){
                     perror("fwrite");
                     exit(1);
                 }
@@ -338,6 +353,8 @@ void huffman_compress(char* filename_input){
     generate_codes(root, table, buffer, depth);
     
     write_compressed(filename_input, heap, root, file_buffer, index, table);    
+
+    free(heap);
 
     fclose(fp);
 }
