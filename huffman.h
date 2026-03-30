@@ -2,6 +2,7 @@
 #define HUFFMAN_H
 
 #define SIZE 256
+#define LIMIT_SIZE (100 * 1024 * 2014) // 100 MB
 
 typedef struct Node{
     unsigned char val;
@@ -13,6 +14,7 @@ typedef struct Node{
 typedef struct MinHeap{
     Node* queue[SIZE]; // Al peggio ho 256 posti, in caso vado a ridurre   
     int size; 
+    unsigned int leaves_counter;
 } MinHeap;
 
 typedef struct Code{
