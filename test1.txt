@@ -1,1 +1,0 @@
-Questo è un semplice test per verificare il funzionamento della compressione di Huffman.
