@@ -555,6 +555,11 @@ void huffman_decompress(char* filename_input){
             fwrite(&c, 1, sizeof(c), fp_write);
         }
     }
-    
+   
+    free_tree(root);
+    free(file_buffer);
+    fclose(fp);
+    fclose(fp_write);
+ 
     return;
 }
