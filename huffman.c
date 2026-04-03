@@ -235,6 +235,7 @@ void print_tree(Node *node){
 }
 
 void write_compressed(char *filename_input, MinHeap *heap, Node* root, unsigned char *file_buffer, long index, Code* table){
+    
     // Creo il file
     char *filename_output = malloc(strlen(filename_input) + 5);
     if(!filename_output){
@@ -253,7 +254,6 @@ void write_compressed(char *filename_input, MinHeap *heap, Node* root, unsigned 
         perror("fopen");
         exit(1);
     }
-    
     // Generiamo l'Header: Numero di Foglie, Albero Serializzato, Numero totale di bit nel body
     // Intestazione, scrivo HF
     fwrite("HF", 1, 2, fp);
@@ -269,7 +269,6 @@ void write_compressed(char *filename_input, MinHeap *heap, Node* root, unsigned 
     unsigned char byte = 0;
     int bit_index = 0;
     pre_order_visit_tree(root, fp, &byte, &bit_index);
-    free_tree(root);
     // Eventuale byte parziale
     if(bit_index != 0) fwrite(&byte, 1, 1, fp);
     // Numero totale di bit del body
@@ -309,8 +308,6 @@ void write_compressed(char *filename_input, MinHeap *heap, Node* root, unsigned 
 
     if(bit_index != 0) fwrite(&byte_buffer, 1, 1, fp);
 
-    free(file_buffer);
-
     fclose(fp);
 
 }
@@ -341,6 +338,7 @@ Node* deserialize_tree(unsigned char *file_buffer, long *index, int *bit_index){
 
     int val = 0;
  
+    // Creo un nuovo nodo
     Node* node = malloc(sizeof(Node));
     node->freq = 0;
     node->val = 0; 
@@ -348,7 +346,7 @@ Node* deserialize_tree(unsigned char *file_buffer, long *index, int *bit_index){
     node->right = NULL;
     
     if(flag == 1){
-        //Foglia, creo un nuovo nodo
+        //Foglia
         for(int i = 0; i < 8; i++){
             int bit = read_bit(file_buffer, index, bit_index);
             val = (val << 1) | bit;
@@ -357,11 +355,29 @@ Node* deserialize_tree(unsigned char *file_buffer, long *index, int *bit_index){
         return node;
     } else {
         //Nodo interno
-        node->left = deserialize_tree(file_buffer, index, bit_index);
+        node->left  = deserialize_tree(file_buffer, index, bit_index);
         node->right = deserialize_tree(file_buffer, index, bit_index);
         return node;
     }
     
+}
+
+unsigned char decode_character(Node *tree, uint64_t *bits_read, unsigned char* file_buffer, long *index, int *bit_index){
+    if(!tree){
+        fprintf(stderr, "Error: deserialized tree\n");
+        exit(1);
+    }
+
+    if(!tree->left && !tree->right){
+        return tree->val;
+    }
+
+    (*bits_read)++;
+    if(read_bit(file_buffer, index, bit_index)){
+        return decode_character(tree->left, bits_read, file_buffer, index, bit_index);
+    } else {
+        return decode_character(tree->right, bits_read, file_buffer, index, bit_index);
+    }
 }
 
 /* --------------------- Functions ----------------------- */
@@ -422,7 +438,9 @@ void huffman_compress(char* filename_input){
     generate_codes(root, table, buffer, depth);
     
     write_compressed(filename_input, heap, root, file_buffer, index, table);    
-
+    
+    free(file_buffer);
+    free_tree(root);
     free(heap);
 
     fclose(fp);
@@ -506,9 +524,37 @@ void huffman_decompress(char* filename_input){
     uint64_t total_bits;
     memcpy(&total_bits, &file_buffer[index], sizeof(uint64_t));
     index += 8;
+    
+    // Creo il file
+    char *filename_output = malloc(strlen(filename_input) + 4);
+    if(!filename_output){
+        perror("malloc");
+        exit(1);
+    }
 
-    // Body  
+    int len_name = strlen(filename_input);
+    memcpy(filename_output, filename_input, len_name - 4);
+    filename_output[len_name - 4] = '\0';
+    strcat(filename_output, "txt");
+    //printf("%s\n",filename_output);
 
+    FILE *fp_write = fopen(filename_output, "wb");
+    if(!fp_write){
+        perror("fopen");
+        exit(1);
+    }
+    // Body 
+    uint64_t i = 0;
+    bit_index = 0;
+    while(i < total_bits){
+        if(!root->left && !root->right){ //Albero con una sola foglia, testo di una sola lettera
+            fwrite(&root->val, 1, 1, fp_write);
+            i++;
+        } else{
+            char c = decode_character(root, &i, file_buffer, &index, &bit_index);
+            fwrite(&c, 1, sizeof(c), fp_write);
+        }
+    }
     
     return;
 }
