@@ -6,6 +6,7 @@ Questo progetto implementa un compressore e decompressore basato sull’algoritm
 Permette di:
 
 comprimere file .txt in formato .huff
+
 decomprimere file .huff nel file originale
 
 La compressione è lossless, quindi i dati vengono recuperati esattamente.
@@ -30,10 +31,15 @@ file.txt
 
 # Funzionalità principali
 Implementazione completa dell’algoritmo di Huffman
+
 Costruzione dell’albero tramite min-heap
+
 Codifica a livello di bit (non stringhe)
+
 Serializzazione dell’albero nel file compresso
+
 Formato .huff custom
+
 Gestione di casi particolari (es. un solo simbolo)
 
 # Formato .huff
@@ -44,10 +50,15 @@ Il file compresso contiene:
 ## Dettaglio
 
 HF → identificatore file
+
 V1.0 → versione formato
+
 leaves → numero di simboli distinti
+
 tree → albero di Huffman serializzato (pre-order)
+
 total_bits → numero totale di bit nel corpo
+
 body → dati compressi
 
 # Albero di Huffman
@@ -55,6 +66,7 @@ body → dati compressi
 L’albero viene salvato in pre-order:
 
 1 → foglia + carattere (8 bit)
+
 0 → nodo interno
 
 Questo permette di ricostruire esattamente l’albero in fase di decompressione.
@@ -63,17 +75,24 @@ Questo permette di ricostruire esattamente l’albero in fase di decompressione.
 
 ## Compressione
 Conteggio frequenze dei caratteri
+
 Costruzione albero di Huffman
+
 Generazione codici binari
+
 Scrittura file .huff
 
 ## Decompressione
 Lettura header
+
 Ricostruzione albero
+
 Decodifica del bitstream
+
 Scrittura file originale
 
 # Limitazioni
 Accetta solo file .txt
+
 Carica l’intero file in memoria
 
