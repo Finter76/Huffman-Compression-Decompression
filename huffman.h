@@ -2,7 +2,7 @@
 #define HUFFMAN_H
 
 #define SIZE 256
-#define LIMIT_SIZE (100 * 1024 * 2014) // 100 MB
+#define LIMIT_SIZE (100 * 1024 * 2024) // 100 MB
 
 typedef struct Node{
     unsigned char val;
