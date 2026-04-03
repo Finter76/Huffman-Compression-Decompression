@@ -13,9 +13,12 @@ La compressione è lossless, quindi i dati vengono recuperati esattamente.
 
 # Compilazione
 gcc -o huffman main.c huffman.c
+
 o
+
 make
-▶️ Utilizzo
+
+# Utilizzo
 ## Compressione
 ./huffman -c file.txt
 
