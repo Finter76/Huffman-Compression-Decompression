@@ -1,5 +1,5 @@
-📦 Huffman Compressor in C
-📖 Descrizione
+# Huffman Compressor in C
+# Descrizione
 
 Questo progetto implementa un compressore e decompressore basato sull’algoritmo di Huffman coding.
 
@@ -10,41 +10,47 @@ decomprimere file .huff nel file originale
 
 La compressione è lossless, quindi i dati vengono recuperati esattamente.
 
-🚀 Compilazione
+# Compilazione
 gcc -o huffman main.c huffman.c
+o
+make
 ▶️ Utilizzo
-Compressione
+## Compressione
 ./huffman -c file.txt
 
-Genera:
+## Genera:
 
 file.huff
-Decompressione
+## Decompressione
 ./huffman -d file.huff
 
-Genera:
+## Genera:
 
 file.txt
-⚙️ Funzionalità principali
+
+# Funzionalità principali
 Implementazione completa dell’algoritmo di Huffman
 Costruzione dell’albero tramite min-heap
 Codifica a livello di bit (non stringhe)
 Serializzazione dell’albero nel file compresso
 Formato .huff custom
 Gestione di casi particolari (es. un solo simbolo)
-📁 Formato .huff
+
+# Formato .huff
 
 Il file compresso contiene:
 
 [HF][V1.0][leaves][padding][tree][total_bits][body]
-Dettaglio
+## Dettaglio
+
 HF → identificatore file
 V1.0 → versione formato
 leaves → numero di simboli distinti
 tree → albero di Huffman serializzato (pre-order)
 total_bits → numero totale di bit nel corpo
 body → dati compressi
-🌳 Albero di Huffman
+
+# Albero di Huffman
 
 L’albero viene salvato in pre-order:
 
@@ -53,18 +59,21 @@ L’albero viene salvato in pre-order:
 
 Questo permette di ricostruire esattamente l’albero in fase di decompressione.
 
-🔄 Come funziona
-Compressione
+# Come funziona
+
+## Compressione
 Conteggio frequenze dei caratteri
 Costruzione albero di Huffman
 Generazione codici binari
 Scrittura file .huff
-Decompressione
+
+## Decompressione
 Lettura header
 Ricostruzione albero
 Decodifica del bitstream
 Scrittura file originale
-⚠️ Limitazioni
+
+# Limitazioni
 Accetta solo file .txt
 Carica l’intero file in memoria
-Nessun controllo avanzato su file corrottin-Decompression
+
